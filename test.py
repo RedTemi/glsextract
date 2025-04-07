@@ -1,6 +1,10 @@
 import pdfplumber
 import re
 import pandas as pd
+import os
+import tkinter as tk
+from tkinter import filedialog, messagebox, ttk
+from threading import Thread
 
 def extract_shipments(pdf_path):
     shipments = []
@@ -106,6 +110,90 @@ def extract_shipments(pdf_path):
         return final_df
     return pd.DataFrame()
 
-# Usage
-df = extract_shipments("DICOM_INVOICE.pdf")
-df.to_csv("processed_shipments.csv", index=False)
+
+def process_folder(input_folder, output_path, status_label):
+    all_dfs = []
+    pdf_files = [f for f in os.listdir(input_folder) if f.lower().endswith('.pdf')]
+    
+    if not pdf_files:
+        status_label.config(text="No PDF files found in selected folder")
+        return
+
+    status_label.config(text=f"Processing {len(pdf_files)} PDFs...")
+    
+    for i, pdf_file in enumerate(pdf_files):
+        try:
+            pdf_path = os.path.join(input_folder, pdf_file)
+            df = extract_shipments(pdf_path)
+            if not df.empty:
+                all_dfs.append(df)
+            status_label.config(text=f"Processed {i+1}/{len(pdf_files)} files")
+        except Exception as e:
+            print(f"Error processing {pdf_file}: {str(e)}")
+    
+    if all_dfs:
+        final_df = pd.concat(all_dfs, ignore_index=True)
+        final_df.to_csv(output_path, index=False)
+        status_label.config(text=f"Success! Combined CSV saved to {output_path}")
+        messagebox.showinfo("Success", f"Combined CSV saved to:\n{output_path}")
+    else:
+        status_label.config(text="No valid data found in PDFs")
+        messagebox.showwarning("No Data", "No shipment data found in PDF files")
+
+class PDFApp(tk.Tk):
+    def __init__(self):
+        super().__init__()
+        self.title("PDF Shipment Extractor")
+        self.geometry("500x200")
+        
+        # Input Folder
+        self.input_folder = tk.StringVar()
+        ttk.Label(self, text="Input Folder:").pack(pady=5)
+        ttk.Entry(self, textvariable=self.input_folder, width=50).pack()
+        ttk.Button(self, text="Browse...", command=self.select_input_folder).pack()
+        
+        # Output File
+        self.output_file = tk.StringVar()
+        ttk.Label(self, text="Output CSV:").pack(pady=5)
+        ttk.Entry(self, textvariable=self.output_file, width=50).pack()
+        ttk.Button(self, text="Browse...", command=self.select_output_file).pack()
+        
+        # Status
+        self.status_label = ttk.Label(self, text="")
+        self.status_label.pack(pady=10)
+        
+        # Process Button
+        ttk.Button(self, text="Process PDFs", command=self.start_processing).pack()
+    
+    def select_input_folder(self):
+        folder = filedialog.askdirectory()
+        if folder:
+            self.input_folder.set(folder)
+            default_output = os.path.join(folder, "combined_shipments.csv")
+            self.output_file.set(default_output)
+    
+    def select_output_file(self):
+        file = filedialog.asksaveasfilename(
+            defaultextension=".csv",
+            filetypes=[("CSV Files", "*.csv")]
+        )
+        if file:
+            self.output_file.set(file)
+    
+    def start_processing(self):
+        input_folder = self.input_folder.get()
+        output_file = self.output_file.get()
+        
+        if not input_folder or not output_file:
+            messagebox.showerror("Error", "Please select both input folder and output file")
+            return
+        
+        Thread(target=process_folder, args=(
+            input_folder,
+            output_file,
+            self.status_label
+        ), daemon=True).start()
+
+if __name__ == "__main__":
+    app = PDFApp()
+    app.mainloop()
