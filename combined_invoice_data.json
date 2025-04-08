@@ -1,0 +1,56 @@
+[
+    {
+        "charges": {},
+        "source_pdf": "DICOM_INVOICE3.pdf",
+        "waybill_id": "P53650096",
+        "total": "missing"
+    },
+    {
+        "charges": {},
+        "source_pdf": "DICOM_INVOICE3.pdf",
+        "waybill_id": "P54309441",
+        "total": "missing"
+    },
+    {
+        "charges": {},
+        "source_pdf": "DICOM_INVOICE3.pdf",
+        "waybill_id": "P54309500",
+        "total": "missing"
+    },
+    {
+        "charges": {},
+        "source_pdf": "DICOM_INVOICE3.pdf",
+        "waybill_id": "P54309511",
+        "total": "missing"
+    },
+    {
+        "charges": {},
+        "source_pdf": "DICOM_INVOICE3.pdf",
+        "waybill_id": "P54309522",
+        "total": "missing"
+    },
+    {
+        "charges": {},
+        "source_pdf": "DICOM_INVOICE3.pdf",
+        "waybill_id": "P54309544",
+        "total": "missing"
+    },
+    {
+        "charges": {},
+        "source_pdf": "DICOM_INVOICE3.pdf",
+        "waybill_id": "P54309566",
+        "total": "missing"
+    },
+    {
+        "charges": {},
+        "source_pdf": "DICOM_INVOICE3.pdf",
+        "waybill_id": "P54309581",
+        "total": "missing"
+    },
+    {
+        "charges": {},
+        "source_pdf": "DICOM_INVOICE3.pdf",
+        "waybill_id": "P54309592",
+        "total": "missing"
+    }
+]
