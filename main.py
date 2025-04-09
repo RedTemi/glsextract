@@ -43,7 +43,7 @@ def extract_shipments(pdf_path):
         (r'\bweight\b', 'weight_charge'), (r'carbon\s*surch?r[gq]?\.?', 'carbon surchrg.'),
         (r'\bfuel\b', 'fuel'), (r'2nd\s*delivery', '2nd delivery'),
         (r'adrs\s*correction', 'adrs correction'), (r'ps:\s*max\s*limits', 'ps: max limits'),
-        (r'non.?conveyable', 'non-conveyable'), (r'over\s*36\s*inches', 'over 36 inches'),
+        (r'non.?conveyable', 'non-conveyable'),(r'conveyable', 'non-conveyable'), (r'over\s*36\s*inches', 'over 36 inches'),
         (r'over\s*44\s*inches', 'over 44 inches'), (r'over\s*max\s*limits', 'over max limits'),
         (r'overweight\s*\(pc\)', 'overweight (pc)'), (r'overweight\s*\(sh\)', 'overweight (sh)'),
         (r'HST\s*(NB|NFL|NS|ON|PE)?', lambda m: f'HST {m.group(1)}' if m.group(1) else 'HST'),
@@ -88,6 +88,8 @@ def extract_shipments(pdf_path):
                 
                 if current_shipment:
                    # Charge processing logic remains the same...
+                    charge_finder_re = re.compile(r'([A-Za-z][\w\s\-\(\):\.%]+?)\s+(\d+\.\d+)')
+#                                                        ^--- The non-greedy quantifier
                     charge_matches = re.findall(r'([A-Za-z][\w\s\-\(\):\.%]+?)\s+(\d+\.\d+)', line)
                     for charge_raw, amount_str in charge_matches:
                         charge_name = None
